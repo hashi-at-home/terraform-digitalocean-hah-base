@@ -12,6 +12,8 @@ repos:
     rev: v1.64.1
     hooks:
       - id: infracost_breakdown
+        args:
+          - --args=--path=.
       - id: terraform_fmt
       - id: terraform_docs_replace
       - id: terraform_tfsec

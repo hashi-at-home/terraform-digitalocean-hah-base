@@ -3,16 +3,16 @@ terraform {
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
+      version = "= 2.19.0"
     }
     vault = {
       source  = "hashicorp/vault"
-      version = "3.4.0"
+      version = "= 3.4.0"
     }
   }
 
   backend "consul" {
-    path = "do/hah-vpc-with-space"
+    path = "do/hah-vpc"
   }
 }
 
@@ -23,7 +23,7 @@ variable "ssh_key_name" {
 }
 
 data "vault_generic_secret" "do_token" {
-  path = "kv/do"
+  path = "digitalocean/tokens"
 }
 
 data "vault_generic_secret" "ssh" {
@@ -31,15 +31,7 @@ data "vault_generic_secret" "ssh" {
 }
 
 provider "digitalocean" {
-  token             = data.vault_generic_secret.do_token.data["token"]
-  spaces_access_id  = data.vault_generic_secret.do_token.data["access_key_hashi_at_home"]
-  spaces_secret_key = data.vault_generic_secret.do_token.data["secret_key_hashi_at_home"]
-}
-
-module "test-space" {
-  selected_region = "🇳🇱"
-  bucket_name     = "terraform-backend-hah"
-  source          = "github.com/hashi-at-home/tfmod-do-space"
+  token = data.vault_generic_secret.do_token.data["terraform"]
 }
 
 # Digital Ocean VPC for droplets
