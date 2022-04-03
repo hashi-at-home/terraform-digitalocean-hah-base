@@ -16,6 +16,11 @@ terraform {
   }
 }
 
+variable "region" {
+  type        = string
+  description = "DO Region to deploy into"
+  default     = "ams3"
+}
 variable "ssh_key_name" {
   type        = string
   description = "SSH Key for digital ocean droplets"
@@ -31,17 +36,27 @@ data "vault_generic_secret" "ssh" {
 }
 
 provider "digitalocean" {
-  token = data.vault_generic_secret.do_token.data["terraform"]
+  token             = data.vault_generic_secret.do_token.data["terraform"]
+  spaces_access_id  = data.vault_generic_secret.do_token.data["spaces_key"]
+  spaces_secret_key = data.vault_generic_secret.do_token.data["spaces_secret"]
 }
 
 # Digital Ocean VPC for droplets
 resource "digitalocean_vpc" "vpc" {
   name        = "terraform-vpc-hah"
-  region      = "ams3"
+  region      = var.region
   description = "VPC for hashi at home"
   ip_range    = "10.10.10.0/24"
 }
 
+resource "digitalocean_spaces_bucket" "images" {
+  name   = "hah-images"
+  region = var.region
+  acl    = "private"
+  versioning {
+    enabled = true
+  }
+}
 resource "digitalocean_ssh_key" "test_instance" {
   name       = var.ssh_key_name
   public_key = data.vault_generic_secret.ssh.data["public_key"]
