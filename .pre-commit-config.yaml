@@ -30,3 +30,4 @@ ci:
     - terraform_fmt
     - terraform_docs
     - terraform_trivy
+    - commitlint
