@@ -16,10 +16,18 @@ repos:
           - --args=--path=.
       - id: terraform_fmt
       - id: terraform_docs
-      - id: terraform_tfsec
+      - id: terraform_trivy
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.11.0
     hooks:
       - id: commitlint
         additional_dependencies:
           - "@commitlint/config-conventional"
+          - "@commitlint/cli"
+ci:
+  skip:
+    - infracost_breakdown
+    - terraform_fmt
+    - terraform_docs
+    - terraform_trivy
+    - commitlint
